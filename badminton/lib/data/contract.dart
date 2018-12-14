@@ -35,7 +35,7 @@ class BadSizes {
   static final double navBarTitles = 9;
 
   // Calendar cell dimensions
-  static final double cellWidth = 72;
+  static final double cellWidth = 82;
   static const double cellHeight = 60;
   static final double cellPadding = 1;
 
