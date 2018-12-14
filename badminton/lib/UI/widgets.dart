@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:badminton/data/contract.dart';
-import 'package:badminton/services/calendar_service.dart';
 
 class BadWidgets {
 
   static Widget bottomBar() {
     return BottomNavigationBar(
-      currentIndex: 2,
+      currentIndex: 0,
       type: BottomNavigationBarType.fixed,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
@@ -71,17 +70,12 @@ class _CellState extends State<Cell> {
     return Container(
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-      ),
-//      color: widget.color,
       child: Padding(
         padding: EdgeInsets.all(BadSizes.cellPadding),
         child: Material(
           color: widget.color,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           child: InkWell(
-            borderRadius: BorderRadius.circular(5),
             child: Center(
               child: Text(widget.text),
             )

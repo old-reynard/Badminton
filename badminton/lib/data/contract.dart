@@ -36,10 +36,17 @@ class BadSizes {
 
   // Calendar cell dimensions
   static final double cellWidth = 72;
-  static final double cellHeight = 60;
+  static const double cellHeight = 60;
   static final double cellPadding = 1;
 
   static final int cellsPerScreen = 5;
+
+  // backdrop
+  static final int backdropDuration = 100;
+  static const double headerHeight = 50;
+  static const double headerBorderRadius = 10;
+  static const double backdropHeight = 375;
+
 }
 
 

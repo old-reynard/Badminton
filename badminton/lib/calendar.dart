@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'data/contract.dart';
 import 'package:badminton/UI/widgets.dart';
 import 'services/calendar_service.dart';
+import 'package:badminton/UI/backdrop.dart';
 
 class CalendarPage extends StatefulWidget {
 
@@ -14,50 +15,80 @@ class CalendarPage extends StatefulWidget {
 }
 
 
-class _CalendarPageState extends State<CalendarPage> {
+class _CalendarPageState extends State<CalendarPage>
+  with SingleTickerProviderStateMixin {
 
+  AnimationController controller;
   Map available;
 
 
   @override
   void initState() {
     super.initState();
-    available = widget._calendarService.availability();
+    widget._calendarService.availability().then((json) {
+      setState(() {
+        available = json;
+      });
+    });
+
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(microseconds: BadSizes.backdropDuration),
+      value: 0.0
+    );
   }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+
+  bool get isBackdropVisible {
+    final AnimationStatus status = controller.status;
+    return status == AnimationStatus.completed ||
+        status == AnimationStatus.forward;
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-             children: calendarGrid(),
-          ),
-        ),
-      ),
+      body: Backdrop(controller: controller, backLayer: calendarGrid(),),
       bottomNavigationBar: BadWidgets.bottomBar(),
     );
   }
 
-  List<Widget> calendarGrid() {
+  Widget calendarGrid() {
 
     Color color;
 
     List<Widget> grid = <Widget>[];
-    var dates = available.keys.toList();
-    for (int i = 0; i < BadSizes.cellsPerScreen; i++) {
-      color = (i == 0 ? BadColors.background : BadColors.main);
-      var date = dates[i];
-      grid.add(
-          Column(
-            children: fromDate(available[date], color),
-          )
-      );
+    if (available != null) {
+      var dates = available.keys.toList();
+      for (int i = 0; i < BadSizes.cellsPerScreen; i++) {
+        color = (i == 0 ? BadColors.background : BadColors.main);
+        var date = dates[i];
+        grid.add(
+            Column(
+              children: fromDate(available[date], color),
+            )
+        );
+      }
     }
 
-    return grid;
+    return SingleChildScrollView(
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            children: grid,
+          ),
+        ),
+      );
   }
 
   List<Widget> fromDate(Map date, Color color) {
@@ -78,11 +109,21 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Widget _appBar() {
     return AppBar(
+      leading: new IconButton(
+        onPressed: () {
+          controller.fling(velocity: isBackdropVisible ? -1.0 : 1.0);
+        },
+        icon: new AnimatedIcon(
+          icon: AnimatedIcons.close_menu,
+          progress: controller.view,
+        ),
+      ),
       elevation: 8.0,
       backgroundColor: BadColors.background,
       bottom: PreferredSize(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: _populateHeader(),
           ),
           preferredSize: Size.fromHeight(BadSizes.cellHeight),
@@ -92,10 +133,12 @@ class _CalendarPageState extends State<CalendarPage> {
 
   List<Widget> _populateHeader() {
     List<Widget> header = <Widget>[];
-    var dates = available.keys. toList();
-    for (int i = 0; i < BadSizes.cellsPerScreen; i++) {
-      DateTime date = dates[i];
-      header.add(CellHeader(date: date.day, day: date.weekday.toString(),));
+    if (available != null) {
+      var dates = available.keys. toList();
+      for (int i = 0; i < BadSizes.cellsPerScreen; i++) {
+        DateTime date = dates[i];
+        header.add(CellHeader(date: date.day, day: date.weekday.toString(),));
+      }
     }
     return header;
   }

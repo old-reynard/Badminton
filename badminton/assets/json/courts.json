@@ -1,0 +1,76 @@
+{
+   "success":1,
+   "slots":[
+      {
+         "slot_list":[
+            {
+               "start_time":"10:00",
+               "end_time":"11:00",
+               "total_slot":5,
+               "available":2,
+               "booked":3,
+               "blocked":0
+            },
+            {
+               "start_time":"11:00",
+               "end_time":"12:00",
+               "total_slot":5,
+               "available":2,
+               "booked":3,
+               "blocked":0
+            }
+         ],
+         "date":"2018-12-13"
+      },
+      {
+         "slot_list":[
+            {
+               "start_time":"10:00",
+               "end_time":"11:00",
+               "total_slot":5,
+               "available":2,
+               "booked":3,
+               "blocked":0
+            },
+            {
+               "start_time":"11:00",
+               "end_time":"12:00",
+               "total_slot":5,
+               "available":2,
+               "booked":3,
+               "blocked":0
+            }
+         ],
+         "date":"2018-12-14"
+      }
+   ],
+   "subtype_list":[
+      {
+         "name":"badminton court",
+         "is_primary":1
+      },
+      {
+         "name":"cricket ground",
+         "is_primary":0
+      }
+   ],
+   "services_list":[
+      {
+         "service_name":"badminton",
+         "service_id":174,
+         "inventory_name":"Court 1"
+      },
+      {
+         "service_name":"ground",
+         "service_id":223,
+         "inventory_name":"Ground 2"
+      }
+   ],
+   "multi_service":1,
+   "provider_id":32,
+   "service_id":[
+      174,
+      223
+   ],
+   "message":"Login Success"
+}
