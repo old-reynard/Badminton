@@ -23,7 +23,7 @@ class BadStrings {
   static final String calendarNavBarTitle = 'Calendar'.toUpperCase();
   static final String reportsNavBarTitle = 'Reports'.toUpperCase();
   static final String crmNavBarTitle = 'CRM'.toUpperCase();
-  static final String settingsNavBarTitle = 'Setiings'.toUpperCase();
+  static final String settingsNavBarTitle = 'Settings'.toUpperCase();
   static const String gridFull = 'Full';
 }
 
@@ -35,7 +35,7 @@ class BadSizes {
   static final double navBarTitles = 9;
 
   // Calendar cell dimensions
-  static final double cellWidth = 82;
+  static final double cellWidth = 72;
   static const double cellHeight = 60;
   static final double cellPadding = 1;
 

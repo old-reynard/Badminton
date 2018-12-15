@@ -2,6 +2,19 @@ import 'package:flutter/material.dart';
 
 import 'package:badminton/data/contract.dart';
 
+const String slotsKey = 'slots';
+const String dateKey = 'date';
+const String slotListKey = 'slot_list';
+const String startTimeKey = 'start_time';
+const String endTimeKey = 'end_time';
+const String totalSlotKey = 'total_slot';
+const String availableKey = 'available';
+const String bookedKey = 'booked';
+const String blockedKey = 'blocked';
+const String labelKey = 'label';
+const String visibleKey = 'visible';
+
+
 class BadWidgets {
 
   static Widget bottomBar() {
@@ -41,19 +54,15 @@ class BadWidgets {
     );
   }
 
-  static Widget calendarCell({Color color: BadColors.main, int available, String text : BadStrings.gridFull}) {
-    return Cell(color: color, text: text,);
-  }
+  static Widget calendarCell({Map slot}) => Cell(slot: slot);
 }
 
 
 class Cell extends StatefulWidget {
 
-  final Color color;
-  final int available;
-  final String text;
+  final Map slot;
 
-  Cell({this.color, this.available, this.text});
+  Cell({this.slot});
 
   @override
   _CellState createState() => _CellState();
@@ -61,29 +70,85 @@ class Cell extends StatefulWidget {
 
 class _CellState extends State<Cell> {
 
+  //  Green - if total_slot = available
+  //  Orange - if 50% of total_slot > available (handle decimals)
+  //  Full - if total_slot = booked or if total_slot = booked+blocked (where booked > 0)
+  //  Blocked sign - if total_Slot = blocked
+  Color color;
+  Widget kid;
 
   double height = BadSizes.cellHeight;
   double width = BadSizes.cellWidth;
 
   @override
   Widget build(BuildContext context) {
+
+    final int available = widget.slot[availableKey];
+    final int booked = widget.slot[bookedKey];
+    final int blocked = widget.slot[blockedKey];
+    final int total = widget.slot[totalSlotKey];
+    bool label = widget.slot[labelKey];
+    label = label ?? false;
+    final String startTime = widget.slot[startTimeKey];
+    bool visible = widget.slot[visibleKey];
+    visible = visible ?? false;
+    final double opacity = visible ? 1.0 : 0.0;
+
+
+    color = _getColor(available, booked, blocked, total, label);
+    kid = _getChild(total, booked, blocked, available, label, startTime);
+
     return Container(
       width: width,
       height: height,
-      child: Padding(
-        padding: EdgeInsets.all(BadSizes.cellPadding),
-        child: Material(
-          color: widget.color,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          child: InkWell(
-            child: Center(
-              child: Text(widget.text),
-            )
-          ),
-        )
+      child: Opacity(
+        opacity: opacity,
+        child: Padding(
+          padding: EdgeInsets.all(BadSizes.cellPadding),
+          child: Material(
+            color: color,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            child: InkWell(
+              child: Center(
+                child: kid,
+              )
+            ),
+          )
+        ),
       ),
     );
   }
+
+  Color _getColor(int available, int booked, int blocked, int total, bool label) {
+    Color color;
+    if (label) {
+      color = BadColors.background;
+    } else {
+      if (total == available) color = BadColors.main;
+      else if (total / 2 > available) color = BadColors.buttonAccent;
+      else color = BadColors.empty;
+    }
+    return color;
+  }
+
+  Widget _getChild(int total, int booked, int blocked, int available, bool label, String time) {
+    Widget kid;
+
+    if (label) {
+      kid = Text(time);
+    } else {
+      if (total == blocked) {
+        kid = Icon(Icons.block);
+      } else if (total == booked + blocked) {
+        kid = Text(BadStrings.gridFull);
+      } else {
+        kid = Text("$available Availabe");
+      }
+    }
+
+    return kid;
+  }
+
 }
 
 class CellHeader extends StatefulWidget {

@@ -1,0 +1,84 @@
+{
+ "slot_list":[
+   {
+     "start_time":"10:00",
+     "end_time":"11:00",
+     "total_slot":5,
+     "available":2,
+     "booked":3,
+     "blocked":0
+   },
+   {
+     "start_time":"11:00",
+     "end_time":"12:00",
+     "total_slot":5,
+     "available":2,
+     "booked":3,
+     "blocked":0
+   }
+ ],
+ "date":"2018-12-15"
+},
+{
+"slot_list":[
+ {
+   "start_time":"10:00",
+   "end_time":"11:00",
+   "total_slot":5,
+   "available":2,
+   "booked":3,
+   "blocked":0
+ },
+ {
+   "start_time":"11:00",
+   "end_time":"12:00",
+   "total_slot":5,
+   "available":2,
+   "booked":3,
+   "blocked":0
+ }
+],
+"date":"2018-12-16"
+},
+{
+"slot_list":[
+ {
+   "start_time":"10:00",
+   "end_time":"11:00",
+   "total_slot":5,
+   "available":2,
+   "booked":3,
+   "blocked":0
+ },
+ {
+   "start_time":"11:00",
+   "end_time":"12:00",
+   "total_slot":5,
+   "available":2,
+   "booked":3,
+   "blocked":0
+ }
+],
+"date":"2018-12-17"
+},
+{
+"slot_list":[
+ {
+   "start_time":"10:00",
+   "end_time":"11:00",
+   "total_slot":5,
+   "available":2,
+   "booked":3,
+   "blocked":0
+ },
+ {
+   "start_time":"11:00",
+   "end_time":"12:00",
+   "total_slot":5,
+   "available":2,
+   "booked":3,
+   "blocked":0
+ }
+],
+"date":"2018-12-18"
+}

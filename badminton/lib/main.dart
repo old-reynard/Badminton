@@ -16,6 +16,7 @@ class BadmintonApp extends StatelessWidget {
       title: BadStrings.appTitle,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'SF'
       ),
       home: Root(),
     );
