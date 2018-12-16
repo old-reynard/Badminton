@@ -23,8 +23,8 @@
                "start_time":"15:00",
                "end_time":"16:00",
                "total_slot":8,
-               "available":2,
-               "booked":6,
+               "available":6,
+               "booked":2,
                "blocked":0
             }
 
@@ -56,7 +56,15 @@
                "available":2,
                "booked":3,
                "blocked":0
-            }
+            },
+           {
+             "start_time":"20:00",
+             "end_time":"21:00",
+             "total_slot":5,
+             "available":2,
+             "booked":3,
+             "blocked":0
+           }
          ],
          "date":"2018-12-16"
       },

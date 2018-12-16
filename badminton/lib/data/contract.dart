@@ -8,6 +8,7 @@ const String slotListKey = 'slot_list';
 const String startTimeKey = 'start_time';
 const String endTimeKey = 'end_time';
 const String totalSlotKey = 'total_slot';
+const String slotNameKey = 'slot_name';
 const String availableKey = 'available';
 const String bookedKey = 'booked';
 const String blockedKey = 'blocked';
@@ -17,6 +18,9 @@ const String servicesListKey = 'services_list';
 const String inventoryNameKey = 'inventory_name';
 const String subtypeListKey = 'subtype_list';
 const String nameKey = 'name';
+const String callbackKey = 'callback';
+const String multiServiceKey = 'multi_service';
+
 
 
 class BadColors {
@@ -96,6 +100,9 @@ class BadSizes {
   static final double cellPadding = 1;
 
   static final int cellsPerScreen = 5;
+  static final double headerWeekdaySize = 10;
+  static final double headerDaySize = 18;
+
 
   // Backdrop
   static final int backdropDuration = 100;
@@ -144,6 +151,12 @@ class BadStyles {
 
   static final TextStyle multipleStyle =
     TextStyle(fontSize: BadSizes.multipleTextSize, fontWeight: FontWeight.bold);
+
+  static final TextStyle headerWeekdayStyle =
+    TextStyle(fontSize: BadSizes.headerWeekdaySize);
+
+  static final TextStyle headerDayStyle =
+    TextStyle(fontSize: BadSizes.headerDaySize, fontWeight: FontWeight.bold);
 }
 
 

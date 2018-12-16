@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'data/contract.dart';
+import 'UI/widgets.dart';
 
 class DetailsPage extends StatefulWidget {
 
@@ -66,7 +67,7 @@ class _DetailsPageState extends State<DetailsPage> {
       _purposeButton(),
       _nameButton(),
       _mobileButton(),
-      _submitButton(),
+      BadWidgets.submitButton(BadStrings.submit, () {print('oro');}),
     ];
 
     List<Widget> widgets = <Widget>[];

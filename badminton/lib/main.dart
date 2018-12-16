@@ -36,8 +36,8 @@ class RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    return DetailsPage(service: 'Badminton Courts',);
-//    return CalendarPage(CalendarService());
+//    return DetailsPage(service: 'Badminton Courts',);
+    return CalendarPage(CalendarService());
 //    return MultiplePage(CalendarService());
   }
 }

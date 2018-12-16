@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:badminton/data/contract.dart';
-
+import 'package:badminton/services/utils.dart';
 
 
 class BadWidgets {
@@ -101,6 +101,7 @@ class _CellState extends State<Cell> {
     final int blocked = widget.slot[blockedKey];
     final int total = widget.slot[totalSlotKey];
     bool label = widget.slot[labelKey];
+    VoidCallback callback = widget.slot[callbackKey];
     label = label ?? false;
     final String startTime = widget.slot[startTimeKey];
     bool visible = widget.slot[visibleKey];
@@ -121,10 +122,13 @@ class _CellState extends State<Cell> {
           child: Material(
             color: color,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            child: InkWell(
-              child: Center(
-                child: kid,
-              )
+            child: GestureDetector(
+              onTap: () => callback(),
+              child: InkWell(
+                child: Center(
+                  child: kid,
+                )
+              ),
             ),
           )
         ),
@@ -137,8 +141,8 @@ class _CellState extends State<Cell> {
     if (label) {
       color = BadColors.background;
     } else {
-      if (total == available) color = BadColors.main;
-      else if (total / 2 > available) color = BadColors.buttonAccent;
+      if (total != 0 && total != null && total == available) color = BadColors.main;
+      else if (total / 2 < available) color = BadColors.buttonAccent;
       else color = BadColors.empty;
     }
     return color;
@@ -165,11 +169,10 @@ class _CellState extends State<Cell> {
 }
 
 class CellHeader extends StatefulWidget {
-  final int date;
-  final String day;
+  final DateTime date;
   final String arrow;
 
-  CellHeader({this.date, this.day, this.arrow});
+  CellHeader({this.date, this.arrow});
 
   @override
   _CellHeaderState createState() => _CellHeaderState();
@@ -182,6 +185,11 @@ class _CellHeaderState extends State<CellHeader> {
 
   @override
   Widget build(BuildContext context) {
+    String dayOfWeek = '';
+    if (Utils.isSameDay(widget.date, DateTime.now())) dayOfWeek = 'Today';
+    else if (Utils.isSameDay(widget.date, DateTime.now().add(Duration(days: 1))))
+      dayOfWeek = 'Tomorrow';
+    else dayOfWeek = BadStrings.week[widget.date.weekday - 1];
     return Container(
       width: width,
       height: height,
@@ -189,8 +197,8 @@ class _CellHeaderState extends State<CellHeader> {
         color: BadColors.background,
         child: Column(
           children: <Widget>[
-            Text(widget.day),
-            Text(widget.date.toString()),
+            Text(dayOfWeek, style: BadStyles.headerWeekdayStyle,),
+            Text(widget.date.day.toString(), style: BadStyles.headerDayStyle,),
           ],
         ),
       ),

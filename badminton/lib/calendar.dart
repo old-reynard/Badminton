@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'data/contract.dart';
 import 'package:badminton/UI/widgets.dart';
@@ -6,20 +7,6 @@ import 'services/calendar_service.dart';
 import 'package:badminton/UI/backdrop.dart';
 import 'services/utils.dart';
 
-
-//import 'package:backdrop/backdrop.dart';
-
-//const String slotsKey = 'slots';
-//const String dateKey = 'date';
-//const String slotListKey = 'slot_list';
-//const String startTimeKey = 'start_time';
-//const String endTimeKey = 'end_time';
-//const String totalSlotKey = 'total_slot';
-//const String availableKey = 'available';
-//const String bookedKey = 'booked';
-//const String blockedKey = 'blocked';
-//const String labelKey = 'label';
-//const String visibleKey = 'visible';
 
 
 class CalendarPage extends StatefulWidget {
@@ -33,10 +20,19 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage>
     with SingleTickerProviderStateMixin {
+
   AnimationController controller;
   Map available;
-  DateTime currentDate = DateTime.now();
-  String test;
+//  DateTime currentDate = DateTime.now().subtract(Duration(days: 5));
+  DateTime currentDate = DateTime.now().subtract(Duration(days: 1));
+
+//  String _calendarData;
+
+
+  List<String> subtypes = <String>[];
+  List<String> services = <String>[];
+  String currentSubtype;
+  String currentService;
 
   @override
   void initState() {
@@ -44,6 +40,8 @@ class _CalendarPageState extends State<CalendarPage>
     widget._calendarService.availability().then((json) {
       setState(() {
         available = json;
+        _getSubtypes();
+        _getServices();
       });
     });
 
@@ -52,12 +50,16 @@ class _CalendarPageState extends State<CalendarPage>
         duration: Duration(microseconds: BadSizes.backdropDuration),
         value: 0.0);
 
-    widget._calendarService.getData().then((response) {
-      setState(() {
-        test = response;
-        print('Badminton ' + test);
-      });
-    });
+//    widget._calendarService.getCalendarData().then((response) {
+//      setState(() {
+//        available = json.decode(response);
+//        _getSubtypes();
+//        _getServices();
+//        print(available);
+//      });
+//    });
+
+//    widget._calendarService.getSlotData();
   }
 
   @override
@@ -84,7 +86,6 @@ class _CalendarPageState extends State<CalendarPage>
   Widget calendarGrid() {
     List<String> labels = _getTimeLabels();
     List<Widget> timeLabelHeaders = _getTimeHeaders(labels);
-
     int min = (BadSizes.cellsPerScreen < labels.length)
         ? BadSizes.cellsPerScreen
         : labels.length;
@@ -106,7 +107,7 @@ class _CalendarPageState extends State<CalendarPage>
 
           if (trackDate.isBefore(date)) {
             while(!Utils.isSameDay(date, trackDate)) {
-              int available = 1;
+              int available = 0;
               int blocked = 1;
               int total = 1;
 
@@ -139,6 +140,7 @@ class _CalendarPageState extends State<CalendarPage>
                   totalSlotKey: total,
                   startTimeKey: startTime,
                   visibleKey: true,
+                  callbackKey: _handleBackdrop
                 };
 
                 line.add(BadWidgets.calendarCell(slot: info));
@@ -164,15 +166,19 @@ class _CalendarPageState extends State<CalendarPage>
   }
 
   Widget _appBar() {
+
+    Widget rightDropdown = Container();
+
+    if (available != null && available[multiServiceKey] == 1
+        && services.length != 0 && services.isNotEmpty)
+      rightDropdown = _chooseServiceDropDown();
     return AppBar(
-      leading: IconButton(
-        onPressed: () {
-          controller.fling(velocity: isBackdropVisible ? -1.0 : 1.0);
-        },
-        icon: AnimatedIcon(
-          icon: AnimatedIcons.close_menu,
-          progress: controller.view,
-        ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          _chooseSubtypeDropDown(),
+          rightDropdown,
+        ],
       ),
       elevation: 8.0,
       backgroundColor: BadColors.background,
@@ -195,15 +201,10 @@ class _CalendarPageState extends State<CalendarPage>
         : dates.length;
     for (int i = 0; i < min; i++) {
       DateTime date = DateTime.parse(dates[i]);
-      header.add(CellHeader(
-        date: date.day,
-        day: date.weekday.toString(),
-      ));
+      header.add(CellHeader(date: date,));
     }
     return header;
   }
-
-  /// business logic
 
   List<String> _getTimeLabels() {
     List<String> timeLabels = <String>[];
@@ -223,12 +224,9 @@ class _CalendarPageState extends State<CalendarPage>
   }
 
   List<Widget> _getTimeHeaders(List<String> labels) {
-    List<Widget> headers = <Widget>[];
-    for (String label in labels) {
-      Map info = {startTimeKey: label, labelKey: true, visibleKey: true};
-      headers.add(BadWidgets.calendarCell(slot: info));
-    }
-    return headers;
+    return labels.map((String label) => BadWidgets.calendarCell(
+      slot: {startTimeKey: label, labelKey: true, visibleKey: true},
+    )).toList();
   }
 
   List<String> _getDates() {
@@ -243,4 +241,74 @@ class _CalendarPageState extends State<CalendarPage>
     }
     return dates;
   }
+
+  void _handleBackdrop() => controller.fling(velocity: isBackdropVisible ? -1.0 : 1.0);
+
+  void _getSubtypes() {
+    var subtypes = available[subtypeListKey];
+    for (var subtype in subtypes) {
+      this.subtypes.add(subtype[nameKey]);
+    }
+  }
+
+  void _getServices() {
+    var serviceList = available[servicesListKey];
+    for (var service in serviceList) {
+      services.add(service[inventoryNameKey]);
+    }
+  }
+
+  Widget _chooseSubtypeDropDown() {
+    if (subtypes == null || subtypes.length == 0)
+      return Container();
+    else {
+      final List<DropdownMenuItem<String>> items = subtypes
+          .map((String s) => '${s[0].toUpperCase()}${s.substring(1)}')
+          .map((String value) => DropdownMenuItem<String>(
+        value: value,
+        child: Text(value, style: TextStyle(fontSize: 16, fontWeight:FontWeight.bold),),
+      ))
+          .toList();
+      return DropdownButtonHideUnderline(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: DropdownButton(
+            isDense: true,
+            items: items,
+            value: currentSubtype == null ? null : currentSubtype,
+            onChanged: (String newValue) {
+              setState(() {
+                currentSubtype = newValue;
+              });
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _chooseServiceDropDown() {
+    if (services == null || services.length == 0)
+      return Container();
+    else {
+      List<DropdownMenuItem<String>> items = services
+          .map((String value) => DropdownMenuItem<String>(
+        value: value,
+        child: Text(value == null ? '' : value),
+      ))
+          .toList();
+      return DropdownButtonHideUnderline(
+        child: DropdownButton(
+            isDense: true,
+            items: items,
+            value: currentService == null ? null : currentService,
+            onChanged: (String value) {
+              setState(() {
+                currentService = value;
+              });
+            }),
+      );
+    }
+  }
+
 }

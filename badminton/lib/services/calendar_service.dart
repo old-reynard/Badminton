@@ -4,9 +4,12 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 
-const String apiUrl = 'http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com/';
+const String calendarUrl = 'http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com/v3/saas/slot/list';
+const String slotUrl = 'http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com/v3/saas/slot/data';
 
 class CalendarService {
+
+  var client = http.Client();
 
   var rng = Random();
 
@@ -55,18 +58,16 @@ class CalendarService {
     return json.decode(await loadAsset());
   }
 
-  Future<String> getData() async {
+  Future<String> getCalendarData() async {
+    var response = await client.post(calendarUrl);
+    return response.body;
+  }
 
-    var query = {
-      'mobile':'14377753105',
-      'password': '123456',
-      'start_date':'2018-12-15',
-      'end_date':'2018-12-18'
-    };
+  Future<String> getSlotData(String serviceId, String date) async {
 
-    String requestUrl = "http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com?mobile=14377753105&password=123456&start_date=2018-12-15&end_date=2018-12-18";
-
-    final response = await http.get(requestUrl);
-    return '';//response.body;
+    var response = await client.post(
+        slotUrl + '?service_id={$serviceId}&date={$date}');
+    print(response.body);
+    return response.body;
   }
 }
