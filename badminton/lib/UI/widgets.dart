@@ -2,17 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:badminton/data/contract.dart';
 
-const String slotsKey = 'slots';
-const String dateKey = 'date';
-const String slotListKey = 'slot_list';
-const String startTimeKey = 'start_time';
-const String endTimeKey = 'end_time';
-const String totalSlotKey = 'total_slot';
-const String availableKey = 'available';
-const String bookedKey = 'booked';
-const String blockedKey = 'blocked';
-const String labelKey = 'label';
-const String visibleKey = 'visible';
 
 
 class BadWidgets {
@@ -51,6 +40,30 @@ class BadWidgets {
           ),
         ),
       ],
+    );
+  }
+
+  static Widget submitButton(String text, VoidCallback onClick) {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Center(
+          child: Material(
+            elevation: 2.0,
+            color: BadColors.accent,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(BadSizes.buttonBorderRadius)
+            ),
+            child: FlatButton(
+              onPressed: onClick,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 22),
+                child: Text(text, style: BadStyles.buttonTextStyle,),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

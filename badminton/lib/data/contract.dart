@@ -2,6 +2,22 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
+const String slotsKey = 'slots';
+const String dateKey = 'date';
+const String slotListKey = 'slot_list';
+const String startTimeKey = 'start_time';
+const String endTimeKey = 'end_time';
+const String totalSlotKey = 'total_slot';
+const String availableKey = 'available';
+const String bookedKey = 'booked';
+const String blockedKey = 'blocked';
+const String labelKey = 'label';
+const String visibleKey = 'visible';
+const String servicesListKey = 'services_list';
+const String inventoryNameKey = 'inventory_name';
+const String subtypeListKey = 'subtype_list';
+const String nameKey = 'name';
+
 
 class BadColors {
   static const Color accent = Color(0xFFAF3132);
@@ -54,7 +70,14 @@ class BadStrings {
   static final String to = 'To';
   static final String date = 'Date*: ';
   static final String time = 'Time*: ';
+  static final String maintenance = 'Maintenance';
+  static final String holiday = 'Holiday';
+  static final String academy = 'Academy';
+  static final String userBooking = 'User Booking';
 
+  static final List<String> week = <String>[
+    'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
+  ];
 
 
 

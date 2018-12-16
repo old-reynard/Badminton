@@ -9,17 +9,17 @@ import 'services/utils.dart';
 
 //import 'package:backdrop/backdrop.dart';
 
-const String slotsKey = 'slots';
-const String dateKey = 'date';
-const String slotListKey = 'slot_list';
-const String startTimeKey = 'start_time';
-const String endTimeKey = 'end_time';
-const String totalSlotKey = 'total_slot';
-const String availableKey = 'available';
-const String bookedKey = 'booked';
-const String blockedKey = 'blocked';
-const String labelKey = 'label';
-const String visibleKey = 'visible';
+//const String slotsKey = 'slots';
+//const String dateKey = 'date';
+//const String slotListKey = 'slot_list';
+//const String startTimeKey = 'start_time';
+//const String endTimeKey = 'end_time';
+//const String totalSlotKey = 'total_slot';
+//const String availableKey = 'available';
+//const String bookedKey = 'booked';
+//const String blockedKey = 'blocked';
+//const String labelKey = 'label';
+//const String visibleKey = 'visible';
 
 
 class CalendarPage extends StatefulWidget {
