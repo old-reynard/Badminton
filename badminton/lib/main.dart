@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'data/contract.dart';
 import 'calendar.dart';
 import 'services/calendar_service.dart';
+import 'details.dart';
+import 'multiple.dart';
 
 
 void main() => runApp(new BadmintonApp());
@@ -34,7 +36,8 @@ class RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-
-    return CalendarPage(CalendarService());
+//    return DetailsPage(service: 'Badminton Courts',);
+//    return CalendarPage(CalendarService());
+    return MultiplePage();
   }
 }

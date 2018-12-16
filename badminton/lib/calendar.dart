@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'data/contract.dart';
 import 'package:badminton/UI/widgets.dart';
 import 'services/calendar_service.dart';
 import 'package:badminton/UI/backdrop.dart';
 import 'services/utils.dart';
+
+
 //import 'package:backdrop/backdrop.dart';
 
 const String slotsKey = 'slots';
@@ -17,6 +20,7 @@ const String bookedKey = 'booked';
 const String blockedKey = 'blocked';
 const String labelKey = 'label';
 const String visibleKey = 'visible';
+
 
 class CalendarPage extends StatefulWidget {
   final CalendarService _calendarService;
@@ -32,6 +36,7 @@ class _CalendarPageState extends State<CalendarPage>
   AnimationController controller;
   Map available;
   DateTime currentDate = DateTime.now();
+  String test;
 
   @override
   void initState() {
@@ -46,6 +51,13 @@ class _CalendarPageState extends State<CalendarPage>
         vsync: this,
         duration: Duration(microseconds: BadSizes.backdropDuration),
         value: 0.0);
+
+    widget._calendarService.getData().then((response) {
+      setState(() {
+        test = response;
+        print('Badminton ' + test);
+      });
+    });
   }
 
   @override
@@ -137,7 +149,8 @@ class _CalendarPageState extends State<CalendarPage>
         }
       }
       grid.add(Row(
-
+//        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//        mainAxisSize: MainAxisSize.max,
         children: [timeLabelHeaders[i]] + line,
       ));
     }
@@ -229,17 +242,5 @@ class _CalendarPageState extends State<CalendarPage>
       }
     }
     return dates;
-  }
-
-  int findTimeSpan(Map slots) {
-    int days;
-    DateTime start = DateTime.parse(slots[0][dateKey]);
-    DateTime end = DateTime.parse(slots[slots.length - 1][dateKey]);
-
-    while(Utils.isSameDay(start, end )) {
-      days++;
-      start.add(Duration(days: 1));
-    }
-    return days;
   }
 }

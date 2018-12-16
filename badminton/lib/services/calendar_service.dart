@@ -2,10 +2,9 @@ import 'dart:math';
 import 'dart:async' show Future;
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 
-
-
-
+const String apiUrl = 'http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com/';
 
 class CalendarService {
 
@@ -54,5 +53,20 @@ class CalendarService {
 
   Future<Map> availability() async {
     return json.decode(await loadAsset());
+  }
+
+  Future<String> getData() async {
+
+    var query = {
+      'mobile':'14377753105',
+      'password': '123456',
+      'start_date':'2018-12-15',
+      'end_date':'2018-12-18'
+    };
+
+    String requestUrl = "http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com?mobile=14377753105&password=123456&start_date=2018-12-15&end_date=2018-12-18";
+
+    final response = await http.get(requestUrl);
+    return '';//response.body;
   }
 }
