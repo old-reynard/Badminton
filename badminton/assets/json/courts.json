@@ -69,34 +69,63 @@
          "date":"2018-12-16"
       },
       {
-         "slot_list":[
-            {
-               "start_time":"12:00",
-               "end_time":"13:00",
-               "total_slot":5,
-               "available":2,
-               "booked":3,
-               "blocked":0
-            },
-            {
-               "start_time":"17:00",
-               "end_time":"18:00",
-               "total_slot":5,
-               "available":2,
-               "booked":3,
-               "blocked":0
-            },
-            {
-               "start_time":"15:00",
-               "end_time":"16:00",
-               "total_slot":5,
-               "available":2,
-               "booked":3,
-               "blocked":0
-            }
+             "slot_list":[
+               {
+                 "start_time":"12:00",
+                 "end_time":"13:00",
+                 "total_slot":5,
+                 "available":2,
+                 "booked":3,
+                 "blocked":0
+               },
+               {
+                 "start_time":"17:00",
+                 "end_time":"18:00",
+                 "total_slot":5,
+                 "available":2,
+                 "booked":3,
+                 "blocked":0
+               },
+               {
+                 "start_time":"15:00",
+                 "end_time":"16:00",
+                 "total_slot":5,
+                 "available":2,
+                 "booked":3,
+                 "blocked":0
+               }
          ],
          "date":"2018-12-18"
-      }
+      },
+     {
+       "slot_list":[
+         {
+           "start_time":"12:00",
+           "end_time":"13:00",
+           "total_slot":5,
+           "available":4,
+           "booked":1,
+           "blocked":0
+         },
+         {
+           "start_time":"17:00",
+           "end_time":"18:00",
+           "total_slot":5,
+           "available":5,
+           "booked":0,
+           "blocked":0
+         },
+         {
+           "start_time":"15:00",
+           "end_time":"16:00",
+           "total_slot":5,
+           "available":2,
+           "booked":3,
+           "blocked":0
+         }
+       ],
+       "date":"2018-12-19"
+     }
    ],
    "subtype_list":[
       {

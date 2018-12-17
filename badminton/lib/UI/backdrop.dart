@@ -1,18 +1,47 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:badminton/data/contract.dart';
+import 'package:badminton/services/calendar_service.dart';
+import 'package:intl/intl.dart';
 
 class Backdrop extends StatefulWidget {
   final AnimationController controller;
   final Widget backLayer;
 
-  Backdrop({this.controller, this.backLayer});
+  final int serviceId;
+  final String time;
+  final DateTime date;
+  final CalendarService calendarService;
+
+  Backdrop({
+    this.controller,
+    this.backLayer,
+    this.serviceId,
+    this.date,
+    this.calendarService,
+    this.time
+  });
 
   @override
   _BackdropState createState() => _BackdropState();
 }
 
 class _BackdropState extends State<Backdrop> {
+  var formatter = DateFormat('yyyy-MM-dd');
+  Map data;
+
+  @override
+  void initState() {
+    var formatted = formatter.format(widget.date);
+    widget.calendarService.getSlotData(widget.serviceId.toString(), formatted).then((response) {
+      data = json.decode(response);
+      print(data);
+    });
+    super.initState();
+  }
+
+
   Animation<RelativeRect> getPanelAnimation(BoxConstraints constraints) {
 
     final backPanelHeight = constraints.biggest.height;
@@ -37,6 +66,9 @@ class _BackdropState extends State<Backdrop> {
   Widget bothPanels(BuildContext context, BoxConstraints constraints) {
 
     final double headerHeight = isBackdropVisible ? BadSizes.headerHeight : 0;
+    String label = widget.time + ' on ' +
+        BadStrings.week[widget.date.weekday - 1] + ', ' +
+      formatter.format(widget.date);
 
     return Container(
       child: Stack(
@@ -62,7 +94,7 @@ class _BackdropState extends State<Backdrop> {
                       ),
                       child: Center(
                         child: Text(
-                          "Header",
+                          label, style: BadStyles.backdropHeaderActiveStyle,
                         ),
                       ),
                     ),
@@ -89,4 +121,5 @@ class _BackdropState extends State<Backdrop> {
       builder: bothPanels,
     );
   }
+
 }

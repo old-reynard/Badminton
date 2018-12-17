@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:badminton/data/contract.dart';
 import 'package:badminton/services/utils.dart';
-
+import 'package:badminton/calendar.dart';
 
 class BadWidgets {
 
@@ -67,7 +67,8 @@ class BadWidgets {
     );
   }
 
-  static Widget calendarCell({Map slot}) => Cell(slot: slot);
+  static Widget calendarCell({Map slot}) =>
+      Cell(slot: slot,);
 }
 
 
@@ -96,12 +97,13 @@ class _CellState extends State<Cell> {
   @override
   Widget build(BuildContext context) {
 
+    final DateTime date = widget.slot[dateKey];
     final int available = widget.slot[availableKey];
     final int booked = widget.slot[bookedKey];
     final int blocked = widget.slot[blockedKey];
     final int total = widget.slot[totalSlotKey];
     bool label = widget.slot[labelKey];
-    VoidCallback callback = widget.slot[callbackKey];
+    DateAssigner callback = widget.slot[callbackKey];
     label = label ?? false;
     final String startTime = widget.slot[startTimeKey];
     bool visible = widget.slot[visibleKey];
@@ -123,7 +125,7 @@ class _CellState extends State<Cell> {
             color: color,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
             child: GestureDetector(
-              onTap: () => callback(),
+              onTap: () => callback(date.toString(), startTime),
               child: InkWell(
                 child: Center(
                   child: kid,
@@ -188,8 +190,10 @@ class _CellHeaderState extends State<CellHeader> {
     String dayOfWeek = '';
     if (Utils.isSameDay(widget.date, DateTime.now())) dayOfWeek = 'Today';
     else if (Utils.isSameDay(widget.date, DateTime.now().add(Duration(days: 1))))
-      dayOfWeek = 'Tomorrow';
+      dayOfWeek = 'Tom';
     else dayOfWeek = BadStrings.week[widget.date.weekday - 1];
+
+
     return Container(
       width: width,
       height: height,
@@ -199,6 +203,31 @@ class _CellHeaderState extends State<CellHeader> {
           children: <Widget>[
             Text(dayOfWeek, style: BadStyles.headerWeekdayStyle,),
             Text(widget.date.day.toString(), style: BadStyles.headerDayStyle,),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MonthCell extends StatelessWidget {
+
+  final DateTime date;
+
+  MonthCell(this.date);
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Container(
+      width: BadSizes.cellWidth,
+      height: BadSizes.cellHeight,
+      child: Material(
+        color: BadColors.background,
+        child: Column(
+          children: <Widget>[
+            Text(BadStrings.year[date.month - 1], style: BadStyles.monthCellStyle,),
+            Text(date.year.toString(), style: BadStyles.monthCellStyle,),
           ],
         ),
       ),

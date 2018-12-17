@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 
+
 const String calendarUrl = 'http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com/v3/saas/slot/list';
 const String slotUrl = 'http://ec2-13-233-112-79.ap-south-1.compute.amazonaws.com/v3/saas/slot/data';
 

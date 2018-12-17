@@ -34,6 +34,7 @@ class BadColors {
   static const Color white = Color(0xFFFFFFFF);
   static const Color expansionTile = Color(0xFFDADADA);
   static const Color inactive = Color(0xFF918F8F);
+  static const Color link = Color(0xFF006DF0);
 
 
 
@@ -83,6 +84,10 @@ class BadStrings {
     'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
   ];
 
+  static final List<String> year = <String>[
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+  ];
+
 
 
 }
@@ -102,6 +107,8 @@ class BadSizes {
   static final int cellsPerScreen = 5;
   static final double headerWeekdaySize = 10;
   static final double headerDaySize = 18;
+  static final double monthCellSize = 13;
+
 
 
   // Backdrop
@@ -109,6 +116,7 @@ class BadSizes {
   static const double headerHeight = 50;
   static const double headerBorderRadius = 10;
   static const double backdropHeight = 375;
+  static const double backdropHeaderSize = 13;
 
   // Details page
 
@@ -157,6 +165,14 @@ class BadStyles {
 
   static final TextStyle headerDayStyle =
     TextStyle(fontSize: BadSizes.headerDaySize, fontWeight: FontWeight.bold);
+
+  static final TextStyle monthCellStyle =
+    TextStyle(fontSize: BadSizes.monthCellSize, fontWeight: FontWeight.bold,
+      color: BadColors.link);
+
+  static final TextStyle backdropHeaderActiveStyle =
+      TextStyle(fontWeight: FontWeight.bold, color: BadColors.white,
+        fontSize: BadSizes.backdropHeaderSize);
 }
 
 

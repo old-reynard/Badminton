@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'data/contract.dart';
 import 'package:badminton/UI/widgets.dart';
@@ -7,7 +8,7 @@ import 'services/calendar_service.dart';
 import 'package:badminton/UI/backdrop.dart';
 import 'services/utils.dart';
 
-
+typedef DateAssigner = void Function(String date, String time);
 
 class CalendarPage extends StatefulWidget {
   final CalendarService _calendarService;
@@ -24,15 +25,16 @@ class _CalendarPageState extends State<CalendarPage>
   AnimationController controller;
   Map available;
 //  DateTime currentDate = DateTime.now().subtract(Duration(days: 5));
-  DateTime currentDate = DateTime.now().subtract(Duration(days: 1));
-
-//  String _calendarData;
-
+  DateTime currentDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
+  String selectedTime = '';
 
   List<String> subtypes = <String>[];
   List<String> services = <String>[];
   String currentSubtype;
   String currentService;
+
+  List<DateTime> _dates = <DateTime>[];
 
   @override
   void initState() {
@@ -42,6 +44,8 @@ class _CalendarPageState extends State<CalendarPage>
         available = json;
         _getSubtypes();
         _getServices();
+        _getDates();
+        _fillDateGaps();
       });
     });
 
@@ -55,7 +59,8 @@ class _CalendarPageState extends State<CalendarPage>
 //        available = json.decode(response);
 //        _getSubtypes();
 //        _getServices();
-//        print(available);
+//        _getDates();
+//        _fillDateGaps();
 //      });
 //    });
 
@@ -78,7 +83,14 @@ class _CalendarPageState extends State<CalendarPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
-      body: Backdrop(controller: controller, backLayer: calendarGrid()),
+      body: Backdrop(
+        controller: controller,
+        backLayer: calendarGrid(),
+        serviceId: 174,
+        date: selectedDate,
+        calendarService: widget._calendarService,
+        time: selectedTime,
+      ),
       bottomNavigationBar: BadWidgets.bottomBar(),
     );
   }
@@ -86,80 +98,53 @@ class _CalendarPageState extends State<CalendarPage>
   Widget calendarGrid() {
     List<String> labels = _getTimeLabels();
     List<Widget> timeLabelHeaders = _getTimeHeaders(labels);
-    int min = (BadSizes.cellsPerScreen < labels.length)
+
+    int horMin = (BadSizes.cellsPerScreen < _dates.length)
         ? BadSizes.cellsPerScreen
-        : labels.length;
+        : _dates.length;
 
     List<Widget> grid = <Widget>[];
+    List<List<Widget>> array = List.generate(labels.length, (i) =>
+      List.generate(horMin, (j) => null));
 
+    if (available != null) {
+      var slots = available[slotsKey];
+      for (var slot in slots) {
+        var date = DateTime.parse(slot[dateKey]);
+        if (Utils.isSameDay(currentDate, date) || date.isAfter(currentDate)) {
+          var slotList = slot[slotListKey];
+          for (var booking in slotList) {
+            String startTime = booking[startTimeKey];
+            int available = booking[availableKey];
+            int booked = booking[bookedKey];
+            int blocked = booking[blockedKey];
+            int total = booking[totalSlotKey];
 
+            Map info = {
+              availableKey: available,
+              dateKey: date,
+              bookedKey: booked,
+              blockedKey: blocked,
+              totalSlotKey: total,
+              startTimeKey: startTime,
+              visibleKey: true,
+              callbackKey: _handleBackdrop(date, startTime),
+            };
 
-    for (int i = 0; i < min; i++) {
-      String timeSlot = labels[i];
-      List<Widget> line = <Widget>[];
-
-      if (available != null) {
-        var trackDate = currentDate;
-        var slots = available[slotsKey];
-
-        for (var slot in slots) {
-          var date = DateTime.parse(slot[dateKey]);
-
-          if (trackDate.isBefore(date)) {
-            while(!Utils.isSameDay(date, trackDate)) {
-              int available = 0;
-              int blocked = 1;
-              int total = 1;
-
-              Map info = {
-                availableKey:available,
-                blockedKey: blocked,
-                totalSlotKey: total,
-                visibleKey: true,
-              };
-              line.add(BadWidgets.calendarCell(slot: info));
-              trackDate = trackDate.add(Duration(days: 1));
-            }
-          }
-
-          // found today
-          if (Utils.isSameDay(trackDate, date)) {
-            var slotList = slot[slotListKey];
-            for (var booking in slotList) {
-              String startTime = booking[startTimeKey];
-              if (timeSlot == startTime) {
-                int available = booking[availableKey];
-                int booked = booking[bookedKey];
-                int blocked = booking[blockedKey];
-                int total = booking[totalSlotKey];
-
-                Map info = {
-                  availableKey:available,
-                  bookedKey: booked,
-                  blockedKey: blocked,
-                  totalSlotKey: total,
-                  startTimeKey: startTime,
-                  visibleKey: true,
-                  callbackKey: _handleBackdrop
-                };
-
-                line.add(BadWidgets.calendarCell(slot: info));
-                trackDate = trackDate.add(Duration(days: 1));
-              }
-            }
+            array[labels.indexOf(startTime)][_findDateIndex(date) + 1]
+              = BadWidgets.calendarCell(slot: info,);
           }
         }
       }
-      grid.add(Row(
-//        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//        mainAxisSize: MainAxisSize.max,
-        children: [timeLabelHeaders[i]] + line,
-      ));
     }
+    _fillHeaders(array, timeLabelHeaders);
+    _fillGridGaps(array);
+
+    for (int k = 0; k < array.length; k++) {grid.add(Row(children: array[k],));}
 
     return Container(
         child: Center(
-      child: Column(
+      child: ListView(
         children: grid,
       ),
     ));
@@ -180,7 +165,7 @@ class _CalendarPageState extends State<CalendarPage>
           rightDropdown,
         ],
       ),
-      elevation: 8.0,
+      elevation: 2.0,
       backgroundColor: BadColors.background,
       bottom: PreferredSize(
         child: Row(
@@ -195,14 +180,16 @@ class _CalendarPageState extends State<CalendarPage>
 
   List<Widget> _populateHeader() {
     List<Widget> header = <Widget>[];
-    var dates = _getDates();
-    int min = (BadSizes.cellsPerScreen < dates.length)
-        ? BadSizes.cellsPerScreen
-        : dates.length;
+    int min = (BadSizes.cellsPerScreen - 1 < _dates.length)
+        ? BadSizes.cellsPerScreen - 1
+        : _dates.length;
+    header.add(MonthCell(currentDate));
+
     for (int i = 0; i < min; i++) {
-      DateTime date = DateTime.parse(dates[i]);
-      header.add(CellHeader(date: date,));
+      header.add(CellHeader(date: _dates[i],));
     }
+
+
     return header;
   }
 
@@ -229,20 +216,38 @@ class _CalendarPageState extends State<CalendarPage>
     )).toList();
   }
 
-  List<String> _getDates() {
-    List<String> dates = <String>[];
-
+  List<DateTime> _getDates() {
+//    List<DateTime> dates = <DateTime>[];
     if (available != null) {
       var slots = available[slotsKey];
       for (var slot in slots) {
-        String date = slot[dateKey];
-        dates.add(date);
+
+        DateTime date = DateTime.parse(slot[dateKey]);
+
+        if (date.isAfter(currentDate) ||
+          Utils.isSameDay(date, currentDate)) _dates.add(date);
+      }
+
+      if (_dates.length > 0) {
+        while (_dates.length != BadSizes.cellsPerScreen - 1) {
+          int days = 1;
+          _dates.add(_dates[_dates.length - 1].add(Duration(days: days)));
+          days++;
+        }
       }
     }
-    return dates;
+    return _dates;
   }
 
-  void _handleBackdrop() => controller.fling(velocity: isBackdropVisible ? -1.0 : 1.0);
+  DateAssigner _handleBackdrop(date, time) {
+    return (date, time) {
+      controller.fling(velocity: isBackdropVisible ? -1.0 : 1.0);
+      setState(() {
+        selectedDate = DateTime.parse(date);
+        selectedTime = time;
+      });
+    };
+  }
 
   void _getSubtypes() {
     var subtypes = available[subtypeListKey];
@@ -311,4 +316,52 @@ class _CalendarPageState extends State<CalendarPage>
     }
   }
 
+  void _fillDateGaps() {
+    for (int i = 0; i < _dates.length - 1; i++) {
+      var thisDate = _dates[i];
+      var nextDate = thisDate.add(Duration(days: 1));
+      while (!Utils.isSameDay(nextDate, _dates[i + 1])) {
+        _dates.insert(i + 1, nextDate);
+        nextDate.add(Duration(days: 1));
+      }
+    }
+  }
+
+  int _findDateIndex(DateTime date) {
+    var formatter = DateFormat('yyyy-MM-dd');
+    var formatted = formatter.format(date);
+
+    for (int i = 0; i < _dates.length; i++) {
+      if (formatted ==  formatter.format(_dates[i])) return i;
+    }
+    return -1;
+  }
+
+  void _fillGridGaps(List<List<Widget>> grid) {
+    for (int row = 0; row < grid.length; row++) {
+      for (int col = 0; col < grid[0].length; col++) {
+        if (grid[row][col] == null) {
+          int available = 0;
+          int blocked = 1;
+          int total = 1;
+
+          Map info = {
+            availableKey:available,
+            blockedKey: blocked,
+            totalSlotKey: total,
+            visibleKey: true,
+          };
+          grid[row][col] = BadWidgets.calendarCell(slot: info);
+        }
+      }
+    }
+  }
+
+  void _fillHeaders(List<List<Widget>> grid, List<Widget> headers) {
+    if (grid != null && grid.isNotEmpty && available != null) {
+      for (int row = 0; row < grid.length; row++) {
+        grid[row][0] = headers[row];
+      }
+    }
+  }
 }
